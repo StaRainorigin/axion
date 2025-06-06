@@ -1,4 +1,4 @@
-use axion::{series::new_list_series, DataFrame, AxionError, Series, SeriesTrait};
+use axion_data::{series::new_list_series, DataFrame, AxionError, Series, SeriesTrait};
 
 fn main() -> Result<(), AxionError> {
     let s0 = Series::new("a".into(), [1i64, 2, 3]);

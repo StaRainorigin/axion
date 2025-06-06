@@ -1,4 +1,4 @@
-use axion::{df, AxionError, DataType, AxionResult, DataFrame, SeriesTrait, Series};
+use axion_data::{df, AxionError, DataType, AxionResult, DataFrame, SeriesTrait, Series};
 
 #[test]
 fn test_df_macro_creation_and_properties() -> Result<(), AxionError> {

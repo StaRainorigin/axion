@@ -1,9 +1,9 @@
 // --- 手动导入所有需要的项 --- 喵
-use axion::df; // 导入 df! 宏
-use axion::error::{AxionResult, AxionError}; // 从 error 模块导入
-use axion::dataframe::DataFrame; // 从 dataframe 模块导入
-use axion::dtype::DataType; // 从 dtype 模块导入
-use axion::series::Series; // 从 series 模块导入
+use axion_data::df; // 导入 df! 宏
+use axion_data::error::{AxionResult, AxionError}; // 从 error 模块导入
+use axion_data::dataframe::DataFrame; // 从 dataframe 模块导入
+use axion_data::dtype::DataType; // 从 dtype 模块导入
+use axion_data::series::Series; // 从 series 模块导入
 // GroupBy 本身在测试代码中没有直接使用其类型，所以不一定需要导入
 
 // --- 添加 num_traits::Float 用于 is_nan ---

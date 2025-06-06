@@ -1,7 +1,8 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion, Throughput};
-use axion::series::Series;
+use criterion::{criterion_group, criterion_main, Criterion, Throughput};
+use axion_data::series::Series;
 use rand::Rng;
 use std::time::Duration;
+use std::hint::black_box;
 
 // 辅助函数：生成一个包含随机 i32 数据的 Series
 fn generate_series_i32(size: usize, name_prefix: &str) -> Series<i32> {

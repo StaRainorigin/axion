@@ -1,4 +1,4 @@
-use axion::{read_csv, AxionError, AxionResult, DataFrame, DataType, ReadCsvOptions, Series, WriteCsvOptions};
+use axion_data::{read_csv, AxionError, AxionResult, DataFrame, DataType, ReadCsvOptions, Series, WriteCsvOptions};
 use tempfile::NamedTempFile;
 use std::collections::HashMap;
 use std::io::Write;

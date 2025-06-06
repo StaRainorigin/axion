@@ -1,5 +1,5 @@
-use axion::{DataType, Series, SeriesCompare, SeriesArithScalar, SeriesArithSeries}; // <--- 只需要导入 SeriesCompare
-use axion::error::{AxionError, AxionResult};
+use axion_data::{DataType, Series, SeriesCompare, SeriesArithScalar, SeriesArithSeries}; // <--- 只需要导入 SeriesCompare
+use axion_data::error::{AxionError, AxionResult};
 
 fn create_float_series_with_none() -> Series<f64> {
     Series::from((

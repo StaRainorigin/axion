@@ -1,4 +1,4 @@
-use axion::{
+use axion_data::{
     read_csv,    // 假设返回 AxionResult<DataFrame>
     // DataFrame,   // axion::DataFrame
     Series,      // axion::Series, 用于创建掩码等
@@ -19,7 +19,7 @@ fn main() -> AxionResult<()> {
         eprintln!("错误: CSV 文件未找到于 '{}'", path);
         eprintln!("请确保 'data/train.csv' 文件存在于正确的位置。");
         // 返回一个错误或 panic，取决于你希望如何处理
-        return Err(axion::AxionError::IoError(
+        return Err(axion_data::AxionError::IoError(
             format!("CSV file not found at '{}'", path),
         ));
     }
