@@ -1,7 +1,16 @@
 [package]
-name = "axion"
-version = "0.1.0"
+name = "axion-data"
+version = "0.0.1"
 edition = "2021"
+description = "A high-performance data processing library written in Rust, providing DataFrame and Series functionality similar to pandas"
+license = "MIT"
+documentation = "https://docs.rs/axion-data"
+homepage = "https://github.com/StaRainorigin/axion"
+repository = "https://github.com/StaRainorigin/axion"
+readme = "README.md"
+keywords = ["dataframe", "data-science", "analytics", "pandas", "statistics"]
+categories = ["data-structures", "science", "development-tools"]
+authors = ["StaRainorigin <StaRainorigin@outlook.com>"]
 
 [dependencies]
 num-traits = "*"
