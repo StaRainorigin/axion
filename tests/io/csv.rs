@@ -22,11 +22,10 @@ fn test_read_simple_csv() -> AxionResult<()> {
     assert_eq!(df.height(), 3);
     assert_eq!(df.columns_names(), vec!["col_a", "col_b", "col_c"]);
 
-    // 使用 df.schema() 代替 df.dtypes()
     let schema = df.schema();
     assert_eq!(schema.get("col_a"), Some(&DataType::Int64));
-    assert_eq!(schema.get("col_b"), Some(&DataType::String)); // 移除了 .into()
-    assert_eq!(schema.get("col_c"), Some(&DataType::Bool));   // 移除了 .into()
+    assert_eq!(schema.get("col_b"), Some(&DataType::String)); 
+    assert_eq!(schema.get("col_c"), Some(&DataType::Bool));   
 
     let col_a = df.column("col_a")?.as_any().downcast_ref::<Series<i64>>().unwrap();
     assert_eq!(col_a.get_opt(0), Some(Some(&1i64)));
@@ -52,7 +51,6 @@ fn test_read_csv_with_empty_fields() -> AxionResult<()> {
     assert_eq!(df.width(), 2);
     assert_eq!(df.height(), 3);
 
-    // 使用 df.schema()
     let schema = df.schema();
     assert_eq!(schema.get("name"), Some(&DataType::String));
     assert_eq!(schema.get("value"), Some(&DataType::Int64));
@@ -71,7 +69,7 @@ fn test_read_csv_with_empty_fields() -> AxionResult<()> {
 }
 
 #[test]
-fn test_read_csv_empty_file() -> AxionResult<()> { // 改为返回 AxionResult
+fn test_read_csv_empty_file() -> AxionResult<()> { 
     let content = "";
     let file = create_test_csv(content);
     let result = read_csv(file.path(), None);
@@ -87,13 +85,12 @@ fn test_read_csv_empty_file() -> AxionResult<()> { // 改为返回 AxionResult
 fn test_read_csv_no_records_with_header() -> AxionResult<()> {
     let content = "header1,header2";
     let file = create_test_csv(content);
-    let df = read_csv(file.path(), None)?; // 默认 infer_schema = true
+    let df = read_csv(file.path(), None)?; 
     assert_eq!(df.width(), 2);
     assert_eq!(df.height(), 0);
     assert_eq!(df.columns_names(), vec!["header1", "header2"]);
 
     let schema = df.schema();
-    // 修改期望：当只有表头时，类型应该是 String (因为 infer_column_type 在无数据时返回 String)
     assert_eq!(schema.get("header1"), Some(&DataType::String));
     assert_eq!(schema.get("header2"), Some(&DataType::String));
     Ok(())
@@ -117,7 +114,7 @@ fn test_read_simple_csv_all_string() -> AxionResult<()> {
     assert_eq!(df.columns_names(), vec!["col_a", "col_b", "col_c"]);
 
     let schema = df.schema();
-    assert_eq!(schema.get("col_a"), Some(&DataType::String)); // 强制 String
+    assert_eq!(schema.get("col_a"), Some(&DataType::String)); 
     assert_eq!(schema.get("col_b"), Some(&DataType::String));
     assert_eq!(schema.get("col_c"), Some(&DataType::String));
 
@@ -146,8 +143,7 @@ fn test_read_csv_with_empty_fields_all_string() -> AxionResult<()> {
     assert_eq!(df.width(), 2);
     assert_eq!(df.height(), 3);
 
-    // 使用 df.schema()
-    let schema = df.schema(); // <--- 修改这里 (对应之前的第 387 行附近)
+    let schema = df.schema(); 
     assert_eq!(schema.get("name"), Some(&DataType::String));
     assert_eq!(schema.get("value"), Some(&DataType::String));
 
@@ -186,8 +182,8 @@ fn test_read_csv_infer_types_simple() -> AxionResult<()> {
     let schema = df.schema();
     assert_eq!(schema.get("id"), Some(&DataType::Int64));
     assert_eq!(schema.get("value"), Some(&DataType::Float64));
-    assert_eq!(schema.get("is_active"), Some(&DataType::Bool)); // 修改为 Bool
-    assert_eq!(schema.get("name"), Some(&DataType::String)); // 修改为 String
+    assert_eq!(schema.get("is_active"), Some(&DataType::Bool)); 
+    assert_eq!(schema.get("name"), Some(&DataType::String)); 
 
     let id_col = df.column("id")?.as_any().downcast_ref::<Series<i64>>().unwrap();
     assert_eq!(id_col.get_opt(0), Some(Some(&1i64)));
@@ -230,8 +226,7 @@ fn test_read_csv_manual_dtypes() -> AxionResult<()> {
     };
     let df = read_csv(file.path(), Some(options))?;
 
-    // 使用 df.schema()
-    let schema = df.schema(); // <--- 修改这里 (对应之前的第 470 行附近)
+    let schema = df.schema(); 
     assert_eq!(schema.get("col_a"), Some(&DataType::String));
     assert_eq!(schema.get("col_b"), Some(&DataType::Int64));
 
@@ -258,8 +253,7 @@ fn test_read_csv_no_header_infer_types() -> AxionResult<()> {
     let df = read_csv(file.path(), Some(options))?;
 
     assert_eq!(df.columns_names(), vec!["column_0", "column_1", "column_2"]);
-    // 使用 df.schema()
-    let schema = df.schema(); // <--- 修改这里 (对应之前的第 497 行附近)
+    let schema = df.schema(); 
     assert_eq!(schema.get("column_0"), Some(&DataType::Int64));
     assert_eq!(schema.get("column_1"), Some(&DataType::String));
     assert_eq!(schema.get("column_2"), Some(&DataType::Bool));

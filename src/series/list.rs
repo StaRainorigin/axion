@@ -52,14 +52,14 @@ impl ListSeries {
     }
 }
 
-// --- 为 ListSeries 实现 SeriesTrait --- 喵
+// 为 ListSeries 实现 SeriesTrait
 impl SeriesTrait for ListSeries {
     fn name(&self) -> &str {
         &self.name
     }
 
     fn dtype(&self) -> DataType {
-        // 返回 List 类型，包含内部类型信息喵
+        // 返回 List 类型，包含内部类型信息
         DataType::List(Box::new(self.inner_dtype.clone()))
     }
 
@@ -80,15 +80,15 @@ impl SeriesTrait for ListSeries {
     }
 
     fn clone_box(&self) -> Box<dyn SeriesTrait> {
-        // 需要 ListSeries 实现 Clone 喵
+        // 需要 ListSeries 实现 Clone 
         Box::new(self.clone())
     }
 
-    // get_str 的实现比较复杂，需要决定如何显示内部的 Series 喵
+    // get_str 的实现比较复杂，需要决定如何显示内部的 Series 
     fn get_str(&self, index: usize) -> Option<String> {
         self.data.get(index).and_then(|opt_box| {
             opt_box.as_ref().map(|inner_series| {
-                // --- 修改这里 --- 喵
+                // --- 修改这里 --- 
                 // 1. 检查内部 Series 是否为空
                 if inner_series.is_empty() {
                     return "[]".to_string();
@@ -165,7 +165,7 @@ impl SeriesTrait for ListSeries {
                     new_data.push(opt_val);
                 }
                 None => {
-                    // 索引为 None 时，插入 None 值喵
+                    // 索引为 None 时，插入 None 值
                     new_data.push(None);
                 }
             }
@@ -229,7 +229,7 @@ impl SeriesTrait for ListSeries {
     }
 }
 
-// --- (可选) 实现 Debug 和 Display for ListSeries --- 喵
+// --- (可选) 实现 Debug 和 Display for ListSeries --- 
 impl Debug for ListSeries {
      fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
          f.debug_struct("ListSeries")

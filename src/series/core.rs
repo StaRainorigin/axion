@@ -1444,10 +1444,10 @@ where
 
 // 实现 Series-Series 算术运算 
 macro_rules! impl_arith_series {
-    // 通用模式 (Add, Sub, Mul, Div, Rem) - 移除零检查
+    // 通用模式 (Add, Sub, Mul, Div, Rem) 
     ($method_name:ident, $op_trait:ident, $op_method:ident, $op_symbol:tt, $output_assoc_type:ident) => {
         fn $method_name(&self, rhs: &Series<T>) -> AxionResult<Series<Self::$output_assoc_type>> {
-            // --- 检查长度是否匹配 ---
+            
             if self.len() != rhs.len() {
                 return Err(AxionError::MismatchedLengths {
                     expected: self.len(),
@@ -1456,15 +1456,15 @@ macro_rules! impl_arith_series {
                 });
             }
 
-            // --- 使用 zip 迭代，处理 None ---
+          
             let new_data: Vec<Option<Self::$output_assoc_type>> = self.data.iter()
                 .zip(rhs.data.iter())
                 .map(|(opt_left, opt_right)| {
                     // 如果任一操作数为 None，结果为 None
                     match (opt_left.as_ref(), opt_right.as_ref()) {
                         (Some(left), Some(right)) => {
-                            // --- 克隆左右操作数 ---
-                            // 对于 Div/Rem，如果 right 是整数 0，这里会 panic
+                            // 克隆左右操作数
+                            // 如果 right 是整数 0，panic
                             Some(left.clone().$op_method(right.clone()))
                         }
                         _ => None, // 至少有一个是 None
@@ -1472,27 +1472,22 @@ macro_rules! impl_arith_series {
                 })
                 .collect();
 
-            // 创建新的 Series
             Ok(Series::new_from_options(format!("{}_{}_{}", self.name, stringify!($method_name), rhs.name), new_data))
         }
     };
 }
 
 
-// --- 为 Series<T> 实现 SeriesArithSeries<&Series<T>> -
+// 为 Series<T> 实现 SeriesArithSeries<&Series<T>> 
 impl<T> SeriesArithSeries<&Series<T>> for Series<T>
 where
-    // T 的基本约束
     T: DataTypeTrait + Clone + Debug + Display + Send + Sync + 'static,
-    // T 必须能与自身进行相应的运算
     T: Add<T> + Sub<T> + Mul<T> + Div<T> + Rem<T>,
-    // 运算结果类型也必须满足 Series<T> 的基本约束
     <T as Add<T>>::Output: DataTypeTrait + Clone + Debug + Display + Send + Sync + 'static,
     <T as Sub<T>>::Output: DataTypeTrait + Clone + Debug + Display + Send + Sync + 'static,
     <T as Mul<T>>::Output: DataTypeTrait + Clone + Debug + Display + Send + Sync + 'static,
     <T as Div<T>>::Output: DataTypeTrait + Clone + Debug + Display + Send + Sync + 'static,
     <T as Rem<T>>::Output: DataTypeTrait + Clone + Debug + Display + Send + Sync + 'static,
-    // --- 移除 Zero 约束，因为我们不再检查零 ---
 {
     // --- 定义关联类型 ---
     type AddOutput = <T as Add<T>>::Output;

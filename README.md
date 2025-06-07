@@ -8,15 +8,17 @@
 
 ```toml
 [dependencies]
-axion = "0.1.0"
+axion-data = "0.1.0"
 ```
+
+或者使用 `cargo add axion-data` 命令
 
 ## 🛠️ 快速开始
 
 ### 创建 Series
 
 ```rust
-use axion::series::Series;
+use axion_data::series::Series;
 
 // 从向量创建 Series
 let s1 = Series::new("numbers".to_string(), vec![1, 2, 3, 4, 5]);
@@ -134,7 +136,7 @@ let processed = s.par_apply(|opt_val| {
 ## 📊 DataFrame 支持
 
 ```rust
-use axion::dataframe::DataFrame;
+use axion_data::dataframe::DataFrame;
 
 // 创建 DataFrame
 let mut df = DataFrame::new();
@@ -152,8 +154,6 @@ let high_earners = df.filter(&df.column("salary").unwrap().gt(55000.0).unwrap())
 println!("{}", df);
 ```
 
-## 🔧 高级特性
-
 ### 类型转换
 
 ```rust
@@ -166,21 +166,10 @@ let s_f32 = s_f64.cast::<f32>().unwrap();
 ```rust
 let mut s = Series::new("data".to_string(), vec![3, 1, 4, 1, 5]);
 s.sort(false);  // 升序排序
-println!("{}", s);  // [1, 1, 3, 4, 5]
+println!("{}", s);  // [1, 1, 3, 4, 5
 ```
 
-### 性能优化提示
 
-```rust
-// 检查是否已排序（用于优化某些操作）
-if s.is_sorted() {
-    println!("Series is already sorted!");
-}
-
-// 预分配容量
-let mut s = Series::new_empty("data".to_string(), DataType::Int32);
-// 添加数据...
-```
 
 ## 🧪 测试
 
@@ -200,10 +189,7 @@ cargo bench
 
 - [ ] 更多聚合函数 (std, var, quantile 等)
 - [ ] 窗口函数支持
-- [ ] 分组操作 (groupby)
-- [ ] 连接操作 (join)
 - [ ] 时间序列支持
-- [ ] 文件 I/O (CSV, JSON, Parquet)
 - [ ] 更多字符串操作
 - [ ] 缺失值插值方法
 
