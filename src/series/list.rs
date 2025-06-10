@@ -95,7 +95,7 @@ impl SeriesTrait for ListSeries {
                 }
 
                 // 2. 获取内部 Series 的前几个元素的字符串表示
-                let max_elements_to_show = 5; // 最多显示多少个元素喵
+                let max_elements_to_show = 5; // 最多显示多少个元素
                 let mut elements_str = Vec::with_capacity(max_elements_to_show);
                 for i in 0..std::cmp::min(inner_series.len(), max_elements_to_show) {
                     // 调用内部 Series 的 get_str 获取每个元素的字符串

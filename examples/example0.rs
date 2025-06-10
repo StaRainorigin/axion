@@ -14,7 +14,7 @@ fn test_create_series() {
     let s2 = Series::new_from_options("with_nulls".to_string(), vec![
         Some(10), None, Some(20), Some(30)
     ]);
-    println!("Series with nulls: {:?}", s2);
+    println!("包含空值的Series: {:?}", s2);
     assert_eq!(s2.len(), 4);
 }
 
@@ -26,8 +26,8 @@ fn test_create_dataframe() -> AxionResult<()> {
         Box::new(Series::new("City".to_string(), vec!["New York".to_string(), "London".to_string(), "Paris".to_string()])),
     ])?;
     
-    println!("DataFrame created: {} rows × {} columns", df.height(), df.width());
-    println!("Column names: {:?}", df.columns_names());
+    println!("已创建DataFrame: {} 行 × {} 列", df.height(), df.width());
+    println!("列名: {:?}", df.columns_names());
     println!("Schema: {:?}", df.schema());
     assert_eq!(df.height(), 3);
     assert_eq!(df.width(), 3);
@@ -37,17 +37,18 @@ fn test_create_dataframe() -> AxionResult<()> {
 // ===== 3. 读取数据 =====
 #[test]
 fn test_read_csv() -> AxionResult<()> {
-    // 使用已实现的CSV读取功能
+    // CSV读取
     let path = "data/train.csv";
     
     if std::path::Path::new(path).exists() {
         let df = read_csv(path, None)?;
-        println!("Successfully read CSV: {} rows × {} columns", df.height(), df.width());
-        println!("Columns: {:?}", df.columns_names());
-        println!("Data types: {:?}", df.dtypes());
-        println!("First 3 rows:\n{}", df.head(3));
+        println!("成功读取CSV: {} 行 × {} 列", df.height(), df.width());
+        println!("列名: {:?}", df.columns_names());
+        println!("数据类型: {:?}", df.dtypes());
+        println!("前3行:\n{}", df.head(3));
     } else {
-        println!("CSV file not found at: {}", path);
+        println!("未找到CSV文件: {}", path);
+
         // 创建测试CSV文件
         use std::io::Write;
         let content = "name,age,salary\nAlice,25,50000\nBob,30,60000\nCharlie,35,70000\n";
@@ -56,7 +57,7 @@ fn test_read_csv() -> AxionResult<()> {
         file.write_all(content.as_bytes())?;
         
         let df = read_csv("data/test.csv", None)?;
-        println!("Test CSV read successfully: {} rows × {} columns", df.height(), df.width());
+        println!("测试CSV读取成功: {} 行 × {} 列", df.height(), df.width());
     }
     Ok(())
 }
@@ -64,12 +65,6 @@ fn test_read_csv() -> AxionResult<()> {
 // ===== 4. 查看数据 =====
 #[test]
 fn test_head_tail() -> AxionResult<()> {
-
-    // let df = DataFrame::new(vec![
-    //     Box::new(Series::new("Name".to_string(), vec!["Alice".to_string(), "Bob".to_string(), "Charlie".to_string(), "David".to_string(), "Eve".to_string()])),
-    //     Box::new(Series::new("Age".to_string(), vec![25, 30, 28, 35, 22])),
-    // ])?;
-
     let df = df!(
         "Name" => &["Alice", "Bob", "Charlie", "David", "Eve"],
         "Age" => &[25, 30, 28, 35, 22],
@@ -80,9 +75,9 @@ fn test_head_tail() -> AxionResult<()> {
     let head_df = df.head(3);
     let tail_df = df.tail(2);
     
-    println!("DataFrame: {} rows", df.height());
-    println!("Head (3 rows):\n{}", head_df);
-    println!("Tail (2 rows):\n{}", tail_df);
+    println!("DataFrame: {} 行", df.height());
+    println!("前3行:\n{}", head_df);
+    println!("后2行:\n{}", tail_df);
     
     assert_eq!(head_df.height(), 3);
     assert_eq!(tail_df.height(), 2);
@@ -99,18 +94,18 @@ fn test_describe() -> AxionResult<()> {
     let age_col: &Series<i32> = df.downcast_column("Age")?;
     let salary_col: &Series<f64> = df.downcast_column("Salary")?;
     
-    println!("Age statistics:");
-    println!("  Count: {}", age_col.len());
-    println!("  Mean: {:.2}", age_col.mean().unwrap_or(0.0));
-    println!("  Min: {}", age_col.min().unwrap_or(0));
-    println!("  Max: {}", age_col.max().unwrap_or(0));
-    println!("  Sum: {}", age_col.sum().unwrap_or(0));
+    println!("年龄统计:");
+    println!("  计数: {}", age_col.len());
+    println!("  平均值: {:.2}", age_col.mean().unwrap_or(0.0));
+    println!("  最小值: {}", age_col.min().unwrap_or(0));
+    println!("  最大值: {}", age_col.max().unwrap_or(0));
+    println!("  总和: {}", age_col.sum().unwrap_or(0));
     
-    println!("\nSalary statistics:");
-    println!("  Mean: {:.2}", salary_col.mean().unwrap_or(0.0));
-    println!("  Min: {:.2}", salary_col.min().unwrap_or(0.0));
-    println!("  Max: {:.2}", salary_col.max().unwrap_or(0.0));
-    println!("  Sum: {:.2}", salary_col.sum().unwrap_or(0.0));
+    println!("\n工资统计:");
+    println!("  平均值: {:.2}", salary_col.mean().unwrap_or(0.0));
+    println!("  最小值: {:.2}", salary_col.min().unwrap_or(0.0));
+    println!("  最大值: {:.2}", salary_col.max().unwrap_or(0.0));
+    println!("  总和: {:.2}", salary_col.sum().unwrap_or(0.0));
     
     Ok(())
 }
@@ -124,15 +119,15 @@ fn test_select_operations() -> AxionResult<()> {
         Box::new(Series::new("Salary".to_string(), vec![50000.0, 60000.0, 55000.0])),
     ])?;
     
-    // 使用已实现的select方法
+    // 使用select方法
     let selected_df = df.select(&["Name", "Age"])?;
-    println!("Selected columns: {} rows × {} columns", selected_df.height(), selected_df.width());
-    println!("Selected DataFrame:\n{}", selected_df);
+    println!("选择的列: {} 行 × {} 列", selected_df.height(), selected_df.width());
+    println!("选择后的DataFrame:\n{}", selected_df);
     
-    // 使用已实现的drop方法
+    // 使用drop方法
     let dropped_df = df.drop("Salary")?;
-    println!("After dropping Salary: {} columns", dropped_df.width());
-    println!("Dropped DataFrame:\n{}", dropped_df);
+    println!("删除Salary后: {} 列", dropped_df.width());
+    println!("删除后的DataFrame:\n{}", dropped_df);
     
     assert_eq!(selected_df.width(), 2);
     assert_eq!(dropped_df.width(), 2);
@@ -148,11 +143,11 @@ fn test_column_access() -> AxionResult<()> {
     
     // 使用已实现的column和downcast_column方法
     let name_col = df.column("Name")?;
-    println!("Name column type: {:?}", name_col.dtype());
+    println!("Name列类型: {:?}", name_col.dtype());
     
     let age_col: &Series<i32> = df.downcast_column("Age")?;
-    println!("Age column values: {:?}", age_col.data);
-    println!("First age value: {:?}", age_col.get(0));
+    println!("Age列值: {:?}", age_col.data);
+    println!("第一个年龄值: {:?}", age_col.get(0));
     
     assert_eq!(age_col.len(), 2);
     Ok(())
@@ -169,17 +164,17 @@ fn test_filtering() -> AxionResult<()> {
     
     // 创建过滤条件
     let age_col: &Series<i32> = df.downcast_column("Age")?;
-    let age_mask = age_col.gt(26)?; // 年龄大于26
-    println!("Age > 26 mask: {:?}", age_mask.data);
+    let age_mask = age_col.gt(26)?;
+    println!("年龄 > 26的掩码: {:?}", age_mask.data);
     
-    // 使用已实现的filter方法
+    // 使用filter方法
     let filtered_df = df.filter(&age_mask)?;
-    println!("Filtered DataFrame (Age > 26):\n{}", filtered_df);
-    println!("Filtered rows: {}", filtered_df.height());
+    println!("过滤后的DataFrame (年龄 > 26):\n{}", filtered_df);
+    println!("过滤后行数: {}", filtered_df.height());
     
     // 测试并行过滤
     let par_filtered_df = df.par_filter(&age_mask)?;
-    println!("Parallel filtered DataFrame:\n{}", par_filtered_df);
+    println!("并行过滤后的DataFrame:\n{}", par_filtered_df);
     
     assert_eq!(filtered_df.height(), par_filtered_df.height());
     Ok(())
@@ -196,12 +191,12 @@ fn test_series_comparisons() -> AxionResult<()> {
     let ge_mask = series.gte(3)?;
     let le_mask = series.lte(3)?;
     
-    println!("Original: {:?}", series.data);
-    println!("Values > 3: {:?}", gt_mask.data);
-    println!("Values < 5: {:?}", lt_mask.data);
-    println!("Values == 5: {:?}", eq_mask.data);
-    println!("Values >= 3: {:?}", ge_mask.data);
-    println!("Values <= 3: {:?}", le_mask.data);
+    println!("原始数据: {:?}", series.data);
+    println!("值 > 3: {:?}", gt_mask.data);
+    println!("值 < 5: {:?}", lt_mask.data);
+    println!("值 == 5: {:?}", eq_mask.data);
+    println!("值 >= 3: {:?}", ge_mask.data);
+    println!("值 <= 3: {:?}", le_mask.data);
     
     Ok(())
 }
@@ -213,20 +208,20 @@ fn test_null_handling() -> AxionResult<()> {
         Some(10), None, Some(20), None, Some(30)
     ]);
     
-    // 使用已实现的空值检测方法
+    // 使用空值检测方法
     let null_mask = series_with_nulls.is_null();
     let not_null_mask = series_with_nulls.not_null();
     
-    println!("Original series: {:?}", series_with_nulls.data);
-    println!("Null mask: {:?}", null_mask.data);
-    println!("Not null mask: {:?}", not_null_mask.data);
+    println!("原始数列: {:?}", series_with_nulls.data);
+    println!("空值掩码: {:?}", null_mask.data);
+    println!("非空值掩码: {:?}", not_null_mask.data);
     
-    // 使用已实现的fill_null方法
+    // 使用fill_null方法
     let filled_series = series_with_nulls.fill_null(0);
-    println!("After filling nulls with 0: {:?}", filled_series.data);
+    println!("用0填充空值后: {:?}", filled_series.data);
     
     // 测试有效值迭代器
-    println!("Valid values:");
+    println!("有效值:");
     for value in series_with_nulls.iter_valid() {
         println!("  {}", value);
     }
@@ -246,19 +241,19 @@ fn test_arithmetic_operations() -> AxionResult<()> {
     let mul_result = &series1 * &series2;
     let div_result = &series2 / &series1;
     
-    println!("Series 1: {:?}", series1.data);
-    println!("Series 2: {:?}", series2.data);
-    println!("Addition: {:?}", sum_result.data);
-    println!("Subtraction: {:?}", sub_result.data);
-    println!("Multiplication: {:?}", mul_result.data);
-    println!("Division: {:?}", div_result.data);
+    println!("数列1: {:?}", series1.data);
+    println!("数列2: {:?}", series2.data);
+    println!("加法: {:?}", sum_result.data);
+    println!("减法: {:?}", sub_result.data);
+    println!("乘法: {:?}", mul_result.data);
+    println!("除法: {:?}", div_result.data);
     
     // 与标量运算
     let scalar_mul = &series1 * 2;
     let scalar_add = &series1 + 10;
     
-    println!("Series * 2: {:?}", scalar_mul.data);
-    println!("Series + 10: {:?}", scalar_add.data);
+    println!("数列 * 2: {:?}", scalar_mul.data);
+    println!("数列 + 10: {:?}", scalar_add.data);
     
     Ok(())
 }
@@ -274,28 +269,6 @@ fn test_string_operations() -> AxionResult<()> {
     
     // 使用已实现的字符串访问器
     let str_accessor = string_series.str();
-    
-    // 测试字符串长度
-    // let lengths = str_accessor.len();
-    // println!("Original strings: {:?}", string_series.data);
-    // println!("String lengths: {:?}", lengths.data);
-    
-    // 测试大小写转换
-    // let uppercase = str_accessor.to_uppercase();
-    // let lowercase = str_accessor.to_lowercase();
-    // println!("Uppercase: {:?}", uppercase.data);
-    // println!("Lowercase: {:?}", lowercase.data);
-    
-    // 测试字符串包含
-    // let contains_a = str_accessor.contains("a");
-    // println!("Contains 'a': {:?}", contains_a.data);
-    
-    // 测试前缀和后缀
-    // let starts_with_a = str_accessor.starts_with("a");
-    // let ends_with_e = str_accessor.ends_with("e");
-    // println!("Starts with 'a': {:?}", starts_with_a.data);
-    // println!("Ends with 'e': {:?}", ends_with_e.data);
-    
     Ok(())
 }
 
@@ -304,27 +277,27 @@ fn test_string_operations() -> AxionResult<()> {
 fn test_apply_operations() -> AxionResult<()> {
     let series = Series::new("numbers".to_string(), vec![1, 2, 3, 4, 5]);
     
-    // 测试apply方法
+    // apply方法
     let squared = series.apply(|opt_val| {
         opt_val.map(|&x| x * x)
     });
     
-    println!("Original: {:?}", series.data);
-    println!("Squared: {:?}", squared.data);
+    println!("原始数据: {:?}", series.data);
+    println!("平方: {:?}", squared.data);
     
-    // 测试并行apply
+    // 并行apply
     let par_cubed = series.par_apply(|opt_val| {
         opt_val.map(|&x| x * x * x)
     });
     
-    println!("Parallel cubed: {:?}", par_cubed.data);
+    println!("并行立方: {:?}", par_cubed.data);
     
-    // 测试复杂的apply操作
+    // 复杂的apply操作
     let complex_transform = series.apply(|opt_val| {
         opt_val.map(|&x| if x % 2 == 0 { x * 10 } else { x })
     });
     
-    println!("Complex transform (even * 10): {:?}", complex_transform.data);
+    println!("复杂变换 (偶数 * 10): {:?}", complex_transform.data);
     
     assert_eq!(squared.len(), series.len());
     assert_eq!(par_cubed.len(), series.len());
@@ -344,24 +317,24 @@ fn test_join_operations() -> AxionResult<()> {
         Box::new(Series::new("right_value".to_string(), vec![20, 30, 40])),
     ])?;
     
-    println!("Left DataFrame:\n{}", left_df);
-    println!("Right DataFrame:\n{}", right_df);
+    println!("左表DataFrame:\n{}", left_df);
+    println!("右表DataFrame:\n{}", right_df);
     
-    // 测试内连接
+    // 内连接
     let inner_joined = left_df.inner_join(&right_df, "key", "key")?;
-    println!("Inner Join Result:\n{}", inner_joined);
+    println!("内连接结果:\n{}", inner_joined);
     
-    // 测试左连接
+    // 左连接
     let left_joined = left_df.left_join(&right_df, "key", "key")?;
-    println!("Left Join Result:\n{}", left_joined);
+    println!("左连接结果:\n{}", left_joined);
     
-    // 测试右连接
+    // 右连接
     let right_joined = left_df.right_join(&right_df, "key", "key")?;
-    println!("Right Join Result:\n{}", right_joined);
+    println!("右连接结果:\n{}", right_joined);
     
-    // 测试外连接
+    // 外连接
     let outer_joined = left_df.outer_join(&right_df, "key", "key")?;
-    println!("Outer Join Result:\n{}", outer_joined);
+    println!("外连接结果:\n{}", outer_joined);
     
     Ok(())
 }
@@ -375,26 +348,26 @@ fn test_groupby_operations() -> AxionResult<()> {
         Box::new(Series::new("score".to_string(), vec![85.5, 92.0, 78.5, 95.0, 88.0])),
     ])?;
     
-    println!("Original DataFrame:\n{}", df);
+    println!("原始DataFrame:\n{}", df);
     
-    // // 创建分组对象
-    // let grouped = df.groupby(vec!["category".to_string()])?;
+    // 创建分组对象
+    let grouped = df.groupby(&["category"])?;
     
-    // // 测试聚合操作
-    // let sum_result = grouped.sum()?;
-    // println!("Group Sum:\n{}", sum_result);
+    // 测试聚合操作
+    let sum_result = grouped.sum()?;
+    println!("分组求和:\n{}", sum_result);
     
-    // let mean_result = grouped.mean()?;
-    // println!("Group Mean:\n{}", mean_result);
+    let mean_result = grouped.mean()?;
+    println!("分组平均值:\n{}", mean_result);
     
-    // let count_result = grouped.count()?;
-    // println!("Group Count:\n{}", count_result);
+    let count_result = grouped.count()?;
+    println!("分组计数:\n{}", count_result);
     
-    // let min_result = grouped.min()?;
-    // println!("Group Min:\n{}", min_result);
+    let min_result = grouped.min()?;
+    println!("分组最小值:\n{}", min_result);
     
-    // let max_result = grouped.max()?;
-    // println!("Group Max:\n{}", max_result);
+    let max_result = grouped.max()?;
+    println!("分组最大值:\n{}", max_result);
     
     Ok(())
 }
@@ -404,93 +377,28 @@ fn test_groupby_operations() -> AxionResult<()> {
 fn test_sorting() -> AxionResult<()> {
     let series = Series::new("values".to_string(), vec![30, 10, 25, 5, 20]);
     
-    println!("Original series: {:?}", series.data);
+    println!("原始数列: {:?}", series.data);
     
     // 测试升序排序
     let mut ascending_series = series.clone();
     ascending_series.sort(false); // false = ascending
-    println!("Ascending sort: {:?}", ascending_series.data);
+    println!("升序排序: {:?}", ascending_series.data);
     
     // 测试降序排序
     let mut descending_series = series.clone();
     descending_series.sort(true); // true = descending
-    println!("Descending sort: {:?}", descending_series.data);
+    println!("降序排序: {:?}", descending_series.data);
     
     // 测试排序状态检查
-    println!("Is sorted after ascending: {}", ascending_series.is_sorted());
+    println!("升序排序后是否已排序: {}", ascending_series.is_sorted());
     
     Ok(())
 }
 
-// // ===== 14. 类型转换 =====
-// #[test]
-// fn test_type_casting() -> AxionResult<()> {
-//     let int_series = Series::new("integers".to_string(), vec![1, 2, 3, 4, 5]);
-    
-//     // 转换为浮点数
-//     let float_series = int_series.cast::<f64>()?;
-//     println!("Original integers: {:?}", int_series.data);
-//     println!("Cast to floats: {:?}", float_series.data);
-    
-//     // 测试字符串系列
-//     let string_series = Series::new("strings".to_string(), vec!["1".to_string(), "2".to_string(), "3".to_string()]);
-    
-//     // 可以尝试转换为整数（如果实现了的话）
-//     println!("String series: {:?}", string_series.data);
-    
-//     // assert_eq!(float_series.len(), int_series.len());
-//     println!("Float series length: {}", float_series.len());
-//     println!("String series length: {}", string_series.len());
-
-//     Ok(())
-// }
-
-// ===== 15. 性能测试 =====
-#[test]
-fn test_performance() -> AxionResult<()> {
-    use std::time::Instant;
-    
-    println!("=== Performance Test ===");
-    
-    // 创建大型Series
-    let start = Instant::now();
-    let large_series = Series::new("large".to_string(), (0..1_000_000).collect::<Vec<i32>>());
-    let creation_time = start.elapsed();
-    println!("Created 1M element series in: {:?}", creation_time);
-    
-    // 测试普通apply
-    let start = Instant::now();
-    let _result1 = large_series.apply(|opt_val| {
-        opt_val.map(|&x| x * 2 + 1)
-    });
-    let apply_time = start.elapsed();
-    println!("Sequential apply time: {:?}", apply_time);
-    
-    // 测试并行apply
-    let start = Instant::now();
-    let _result2 = large_series.par_apply(|opt_val| {
-        opt_val.map(|&x| x * 2 + 1)
-    });
-    let par_apply_time = start.elapsed();
-    println!("Parallel apply time: {:?}", par_apply_time);
-    
-    if apply_time > par_apply_time {
-        println!("Speedup: {:.2}x", apply_time.as_secs_f64() / par_apply_time.as_secs_f64());
-    }
-    
-    // 测试过滤性能
-    let start = Instant::now();
-    let mask = large_series.gt(500_000)?;
-    let mask_time = start.elapsed();
-    println!("Mask creation time: {:?}", mask_time);
-    
-    Ok(())
-}
-
-// ===== 16. CSV高级操作 =====
+// ===== 14. CSV高级操作 =====
 #[test]
 fn test_csv_options() -> AxionResult<()> {
-    // 创建测试CSV文件
+    // 创建CSV文件
     let content = "# This is a comment\nname,age,salary\nAlice,25,50000\nBob,30,60000\nCharlie,35,70000\n";
     std::fs::create_dir_all("data").ok();
     std::fs::write("data/test_with_comments.csv", content)?;
@@ -502,14 +410,14 @@ fn test_csv_options() -> AxionResult<()> {
         .build();
     
     let df = read_csv("data/test_with_comments.csv", Some(options))?;
-    println!("CSV with options:\n{}", df);
-    println!("Columns: {:?}", df.columns_names());
-    println!("Data types: {:?}", df.dtypes());
+    println!("带选项的CSV:\n{}", df);
+    println!("列名: {:?}", df.columns_names());
+    println!("数据类型: {:?}", df.dtypes());
     
     Ok(())
 }
 
-// ===== 17. DataFrame操作综合测试 =====
+// ===== 15. DataFrame操作综合测试 =====
 #[test]
 fn test_dataframe_comprehensive() -> AxionResult<()> {
     let mut df = DataFrame::new_empty();
@@ -520,34 +428,27 @@ fn test_dataframe_comprehensive() -> AxionResult<()> {
     df.add_column(Box::new(Series::new("Age".to_string(), vec![25, 30, 28, 35, 22])))?;
     df.add_column(Box::new(Series::new("Salary".to_string(), vec![50000.0, 60000.0, 55000.0, 70000.0, 45000.0])))?;
     
-    println!("Initial DataFrame:\n{}", df);
+    println!("初始DataFrame:\n{}", df);
     
     // 重命名列
     df.rename_column("ID", "EmployeeID")?;
-    println!("After renaming ID to EmployeeID:\n{}", df);
+    println!("将ID重命名为EmployeeID后:\n{}", df);
     
     // 删除列
     let dropped_col = df.drop_column("Salary")?;
-    println!("Dropped column: {}", dropped_col.name());
-    println!("After dropping Salary:\n{}", df);
+    println!("删除的列: {}", dropped_col.name());
+    println!("删除Salary后:\n{}", df);
     
     // 检查DataFrame状态
-    println!("Is empty: {}", df.is_empty());
-    println!("Shape: {} × {}", df.height(), df.width());
+    println!("是否为空: {}", df.is_empty());
+    println!("形状: {} × {}", df.height(), df.width());
     
     Ok(())
 }
 
-// ===== 18. 复杂查询测试 =====
+// ===== 16. 复杂查询测试 =====
 #[test]
 fn test_complex_queries() -> AxionResult<()> {
-    // let df = DataFrame::new(vec![
-    //     Box::new(Series::new("Department".to_string(), vec!["IT".to_string(), "HR".to_string(), "IT".to_string(), "Finance".to_string(), "HR".to_string()])),
-    //     Box::new(Series::new("Name".to_string(), vec!["Alice".to_string(), "Bob".to_string(), "Charlie".to_string(), "David".to_string(), "Eve".to_string()])),
-    //     Box::new(Series::new("Age".to_string(), vec![25, 30, 28, 35, 22])),
-    //     Box::new(Series::new("Salary".to_string(), vec![50000.0, 60000.0, 55000.0, 70000.0, 45000.0])),
-    //     Box::new(Series::new("Experience".to_string(), vec![2, 5, 3, 8, 1])),
-    // ])?;
     
     let df = df!(
         "Department" => ["IT", "HR", "IT", "Finance", "HR"],
@@ -557,7 +458,7 @@ fn test_complex_queries() -> AxionResult<()> {
         "Experience" => [2, 5, 3, 8, 1]
     )?;
 
-    println!("Employee DataFrame:\n{}", df);
+    println!("员工DataFrame:\n{}", df);
     
     // 复杂过滤：年龄大于25且工资大于50000
     let age_col: &Series<i32> = df.downcast_column("Age")?;
@@ -566,26 +467,25 @@ fn test_complex_queries() -> AxionResult<()> {
     let age_mask = age_col.gt(25)?;
     let salary_mask = salary_col.gt(50000.0)?;
     
-    // 需要实现逻辑运算，这里先用单个条件
+    // 需要实现逻辑运算，这里用单个条件
     let filtered_by_age = df.filter(&age_mask)?;
-    println!("Employees with Age > 25:\n{}", filtered_by_age);
+    println!("年龄 > 25的员工:\n{}", filtered_by_age);
     
     let filtered_by_salary = df.filter(&salary_mask)?;
-    println!("Employees with Salary > 50000:\n{}", filtered_by_salary);
+    println!("工资 > 50000的员工:\n{}", filtered_by_salary);
     
     // 选择特定列的组合
     let summary = df.select(&["Name", "Department", "Salary"])?;
-    println!("Employee Summary:\n{}", summary);
+    println!("员工摘要:\n{}", summary);
     
     Ok(())
 }
 
-// 主函数保持简单
+// 主函数
 fn main() -> AxionResult<()> {
-    println!("🚀 Axion数据处理库功能演示");
+    println!("Axion数据处理库功能演示");
     println!("运行 `cargo test` 查看所有测试结果");
     
-    // 可以在这里运行一个简单的演示
     let df = DataFrame::new(vec![
         Box::new(Series::new("Name".to_string(), vec!["Alice".to_string(), "Bob".to_string()])),
         Box::new(Series::new("Age".to_string(), vec![25, 30])),
