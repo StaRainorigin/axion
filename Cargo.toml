@@ -1,6 +1,6 @@
 [package]
 name = "axion-data"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A high-performance data processing library written in Rust, providing DataFrame and Series functionality similar to pandas"
 license = "MIT"
